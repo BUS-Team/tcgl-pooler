@@ -41,7 +41,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>br.com.pooler.Main</mainClass>
+                            <mainClass>br.com.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
