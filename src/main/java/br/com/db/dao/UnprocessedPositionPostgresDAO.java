@@ -1,21 +1,17 @@
 package br.com.db.dao;
 
-import br.com.db.bean.UnprocessedPosition;
 import br.com.db.factory.PostgresFactoryDAO;
 import org.joda.time.DateTime;
 
 import java.sql.*;
 
-/**
- * Created by breno on 13/12/14.
- */
 public class UnprocessedPositionPostgresDAO implements UnprocessedPositionDAO {
 
-    private Connection connetion;
+    private Connection connection;
     private PreparedStatement preparedStatement;
 
     public UnprocessedPositionPostgresDAO() throws Exception {
-        connetion = new PostgresFactoryDAO().getConnection();
+        connection = new PostgresFactoryDAO().getConnection();
     }
 
     private static String query = "INSERT INTO unprocessed_position(bus_line, date_received, content) VALUES (?, ?, ?)";
@@ -23,13 +19,13 @@ public class UnprocessedPositionPostgresDAO implements UnprocessedPositionDAO {
     @Override
     public void insertResponsePosition(String busLine, String responseContent) throws SQLException {
         try {
-            connetion.setAutoCommit(false);
-            preparedStatement = connetion.prepareStatement(query);
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, Integer.parseInt(busLine));
             preparedStatement.setTimestamp(2, new Timestamp(new DateTime().getMillis()));
             preparedStatement.setString(3, responseContent);
             preparedStatement.executeUpdate();
-            connetion.commit();
+            connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -39,8 +35,8 @@ public class UnprocessedPositionPostgresDAO implements UnprocessedPositionDAO {
     @Override
     public ResultSet findListBetween(Long minId, Long maxId) throws SQLException {
         try {
-            connetion.setAutoCommit(false);
-            preparedStatement = connetion.prepareStatement(queryfindListBetween);
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(queryfindListBetween);
             preparedStatement.setFetchSize(1000);
             preparedStatement.setLong(1, minId);
             preparedStatement.setLong(2, maxId);
@@ -56,7 +52,7 @@ public class UnprocessedPositionPostgresDAO implements UnprocessedPositionDAO {
     @Override
     public Long findMaxId() throws SQLException {
         try {
-            preparedStatement = connetion.prepareStatement(queryFindMaxId);
+            preparedStatement = connection.prepareStatement(queryFindMaxId);
             ResultSet rs = preparedStatement.executeQuery();
             if (rs != null && rs.next()) {
                 return rs.getLong("max_id");

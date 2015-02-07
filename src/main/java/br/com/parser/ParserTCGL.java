@@ -29,7 +29,7 @@ public class ParserTCGL implements Parser {
     }
 
     @Override
-    public void run() {
+    synchronized public void run() {
         try {
 
             if (isEmptyPosition(unprocessedPosition)) {

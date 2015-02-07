@@ -4,9 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-/**
- * Created by breno on 15/12/14.
- */
 public class UnprocessedPosition {
     private Long id;
     private Integer busLine;

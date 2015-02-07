@@ -9,28 +9,28 @@ import br.com.db.dao.LastUnprocessedPositionProcessedPostgresDAO;
 import br.com.db.dao.LastUnprocessedPositionProcessedDAO;
 import org.yaml.snakeyaml.Yaml;
 
-/**
- * Created by breno on 13/12/14.
- */
+import javax.sql.DataSource;
+
 public class PostgresFactoryDAO extends FactoryDAO {
     InputStream input;
     Map<String,String> conf;
 
     private static Connection connection = null;
-    private String driverName;
+    private static Connection connectionInsert = null;
     private String url;
     private String user;
     private String password;
+    private String driverName;
 
     public PostgresFactoryDAO() {
         try {
             input = this.getClass().getResourceAsStream("/config.yml");
             conf = (Map<String, String>) new Yaml().load(input);
 
-            driverName = conf.get("driverName");
             url = conf.get("url");
             user = conf.get("user");
             password = conf.get("password");
+            driverName = conf.get("driverName");
 
             Class.forName(driverName);
 
@@ -49,12 +49,26 @@ public class PostgresFactoryDAO extends FactoryDAO {
     }
 
     @Override
-    public UnprocessedPositionDAO getResponsePositionDAO() throws Exception {
+    public UnprocessedPositionDAO getUnprocessedPositionDAO() throws Exception {
         return new UnprocessedPositionPostgresDAO();
     }
 
     @Override
-    public LastUnprocessedPositionProcessedDAO getLastResponsePositionProcessedDAO() throws Exception {
+    public PositionDAO getPositionDAO() throws Exception {
+        return new PositionPostgresDAO();
+    }
+
+    @Override
+    public LastUnprocessedPositionProcessedDAO getLastUnprocessedPositionDAO() throws Exception {
         return new LastUnprocessedPositionProcessedPostgresDAO();
+    }
+
+    @Override
+    public Connection getConnectionInsert() throws Exception {
+        if (connectionInsert == null) {
+            return connectionInsert = DriverManager.getConnection(url, user, password);
+        } else {
+            return connectionInsert;
+        }
     }
 }

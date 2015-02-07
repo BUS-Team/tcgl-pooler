@@ -2,6 +2,7 @@ package br.com.db.factory;
 
 import br.com.db.DataBaseType;
 import br.com.db.dao.LastUnprocessedPositionProcessedDAO;
+import br.com.db.dao.PositionDAO;
 import br.com.db.dao.UnprocessedPositionDAO;
 
 import java.sql.Connection;
@@ -11,9 +12,11 @@ import java.sql.Connection;
  */
 public abstract class FactoryDAO {
 
-    public abstract LastUnprocessedPositionProcessedDAO getLastResponsePositionProcessedDAO() throws Exception;
+    public abstract LastUnprocessedPositionProcessedDAO getLastUnprocessedPositionDAO() throws Exception;
 
-    public abstract UnprocessedPositionDAO getResponsePositionDAO() throws Exception;
+    public abstract UnprocessedPositionDAO getUnprocessedPositionDAO() throws Exception;
+
+    public abstract PositionDAO getPositionDAO() throws Exception;
 
     public abstract Connection getConnection() throws Exception;
 
@@ -27,4 +30,6 @@ public abstract class FactoryDAO {
                 return null;
         }
     }
+
+    public abstract Connection getConnectionInsert() throws Exception;
 }

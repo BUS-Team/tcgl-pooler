@@ -7,26 +7,24 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-/**
- * Created by breno on 14/12/14.
- */
 public class LastUnprocessedPositionProcessedPostgresDAO implements LastUnprocessedPositionProcessedDAO {
 
-    private Connection connetion;
+    private Connection connection;
     private PreparedStatement preparedStatement;
 
     public LastUnprocessedPositionProcessedPostgresDAO() throws Exception {
-        connetion = new PostgresFactoryDAO().getConnection();
+        connection = new PostgresFactoryDAO().getConnection();
     }
 
+    private static String queryFindLastUnprocessedPositionProcessedId =
+            "SELECT MAX(last_id) AS last_id FROM last_unprocessed_position_processed";
 
-    private static String queryFindLastUnprocessedPositionProcessedId = "SELECT MAX(last_id) AS last_id FROM last_unprocessed_position_processed";
     @Override
     public Long findLastResponsePositionProcessedId() throws SQLException {
         ResultSet rs;
         try {
-            connetion.setAutoCommit(false);
-            preparedStatement = connetion.prepareStatement(queryFindLastUnprocessedPositionProcessedId);
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(queryFindLastUnprocessedPositionProcessedId);
             rs = preparedStatement.executeQuery();
 
             if (rs != null && rs.next()) {

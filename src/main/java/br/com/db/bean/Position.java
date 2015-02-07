@@ -2,9 +2,6 @@ package br.com.db.bean;
 
 import java.util.Date;
 
-/**
- * Created by breno on 15/12/14.
- */
 public class Position {
     private Long id;
     private Integer busLine;
@@ -12,6 +9,7 @@ public class Position {
     private Date dateReceived;
     private Float latitude;
     private Float longitude;
+    private Integer type;
 
     public Long getId() {
         return id;
@@ -59,5 +57,13 @@ public class Position {
 
     public void setLongitude(Float longitude) {
         this.longitude = longitude;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Integer getType() {
+        return type;
     }
 }

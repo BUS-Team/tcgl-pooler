@@ -6,6 +6,7 @@ import br.com.db.dao.UnprocessedPositionDAO;
 import br.com.db.factory.FactoryDAO;
 import br.com.parser.Parser;
 import br.com.parser.ParserTCGL;
+import br.com.util.Formatter;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
@@ -13,13 +14,16 @@ import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by breno on 14/12/14.
  */
 public class PostgresExtractor implements Extractor {
 
-    private Parser parser;
+    private ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     private UnprocessedPositionDAO unprocessedPositionDAO;
     private LastUnprocessedPositionProcessedDAO lastUnprocessedPositionProcessedDAO;
     private ResultSet rs;
@@ -33,14 +37,13 @@ public class PostgresExtractor implements Extractor {
             DateTime inicio = new DateTime();
             System.out.println(inicio);
 
-            parser = new ParserTCGL();
             unprocessedPositionDAO = FactoryDAO
                     .getDAOFactory(DataBaseType.POSTGRES)
-                    .getResponsePositionDAO();
+                    .getUnprocessedPositionDAO();
 
             lastUnprocessedPositionProcessedDAO = FactoryDAO
                     .getDAOFactory(DataBaseType.POSTGRES)
-                    .getLastResponsePositionProcessedDAO();
+                    .getLastUnprocessedPositionDAO();
 
             maxId = unprocessedPositionDAO.findMaxId();
             lastId = lastUnprocessedPositionProcessedDAO.findLastResponsePositionProcessedId();
@@ -50,7 +53,7 @@ public class PostgresExtractor implements Extractor {
             while (rs != null && !rs.isAfterLast() && rs.next()) {
                 Parser p = new ParserTCGL();
                 p.init(rs);
-                new Thread(p).start();
+                es.execute(p);
                 count++;
             }
 
@@ -59,16 +62,7 @@ public class PostgresExtractor implements Extractor {
 
             Period d = new Period(inicio, fim);
 
-            PeriodFormatter daysHoursMinutes = new PeriodFormatterBuilder()
-                    .appendDays()
-                    .appendSuffix(" day", " days")
-                    .appendSeparator(" and ")
-                    .appendMinutes()
-                    .appendSuffix(" minute", " minutes")
-                    .appendSeparator(" and ")
-                    .appendSeconds()
-                    .appendSuffix(" second", " seconds")
-                    .toFormatter();
+            PeriodFormatter daysHoursMinutes = Formatter.toDaysHoursMinutes();
 
             System.out.println(daysHoursMinutes.print(d));
             System.out.println("rows: " + count);

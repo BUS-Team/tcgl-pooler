@@ -14,9 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
 
-/**
- * Created by breno on 13/12/14.
- */
 public class Pooler implements Runnable {
     private final String USER_AGENT = "Mozilla/5.0";
     private String busLine;
@@ -24,15 +21,26 @@ public class Pooler implements Runnable {
 
     public Pooler(String busLine) throws Exception {
         this.busLine = busLine;
-        dao = FactoryDAO.getDAOFactory(DataBaseType.POSTGRES).getResponsePositionDAO();
+        dao = FactoryDAO.getDAOFactory(DataBaseType.POSTGRES).getUnprocessedPositionDAO();
     }
 
     @Override
     public void run() {
         try {
+            StringBuffer response = getResponseFromTcgl();
+            dao.insertResponsePosition(busLine, response.toString());
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private StringBuffer getResponseFromTcgl() throws IOException {
+        try {
             URL tcgl = new URL(AppConfiguration.siteUrl);
             HttpURLConnection conn = (HttpURLConnection) tcgl.openConnection();
-
 
             conn.setRequestMethod("POST");
             conn.setRequestProperty("User-Agent", USER_AGENT);
@@ -45,7 +53,6 @@ public class Pooler implements Runnable {
             wr.flush();
             wr.close();
 
-
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
             String inputLine;
@@ -55,16 +62,15 @@ public class Pooler implements Runnable {
                 response.append(inputLine);
             }
             in.close();
-
-            dao.insertResponsePosition(busLine, response.toString());
+            return response;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
+        return null;
     }
 }

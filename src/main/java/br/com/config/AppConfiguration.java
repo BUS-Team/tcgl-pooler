@@ -5,9 +5,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.util.Map;
 
-/**
- * Created by breno on 13/12/14.
- */
 public class AppConfiguration {
     public static String driverName;
     public static String url;

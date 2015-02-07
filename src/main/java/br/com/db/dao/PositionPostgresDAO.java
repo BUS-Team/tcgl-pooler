@@ -8,9 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-/**
- * Created by breno on 17/12/14.
- */
 public class PositionPostgresDAO implements PositionDAO {
     private Connection connetion;
     private PreparedStatement preparedStatement;
@@ -19,7 +16,10 @@ public class PositionPostgresDAO implements PositionDAO {
         connetion = new PostgresFactoryDAO().getConnectionInsert();
     }
 
-    private static String queryInsertPosition = "INSERT INTO position(bus_line, bus_direction, date_received, latitude, longitude, type) VALUES (?,?,?,?,?,?)";
+    private static String queryInsertPosition =
+            "INSERT INTO position(bus_line, bus_direction, date_received, latitude, longitude, type) " +
+            "VALUES (?,?,?,?,?,?)";
+
     @Override
     public void insertPosition(Position p) throws SQLException {
         try {
